@@ -9,10 +9,12 @@ import {
   TicketId,
   TicketList,
   UpdateTicketDto,
-  Order
+  Order,
+  KitchenServiceControllerMethods
 } from '../../humf-proto/build/proto/kitchen'
 
 @Controller()
+@KitchenServiceControllerMethods()
 export class KitchenController implements KitchenServiceController{
   constructor(private readonly kitchenService: KitchenService) {}
 
