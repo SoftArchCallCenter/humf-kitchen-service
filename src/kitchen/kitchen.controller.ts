@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseInterceptors } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { KitchenService } from './kitchen.service';
 // import { CreateKitchenDto } from './dto/create-kitchen.dto';
@@ -12,11 +12,16 @@ import {
   Order,
   KitchenServiceControllerMethods
 } from '../../humf-proto/build/proto/kitchen'
+import { RedisService } from 'src/redis/redis.service';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller()
 @KitchenServiceControllerMethods()
 export class KitchenController implements KitchenServiceController{
-  constructor(private readonly kitchenService: KitchenService) {}
+  constructor(
+    private readonly kitchenService: KitchenService,
+    private readonly redisService: RedisService
+    ) {}
 
   getOrder(kitchenId: KitchenId){
     return this.kitchenService.getOrder(kitchenId)
@@ -26,7 +31,18 @@ export class KitchenController implements KitchenServiceController{
     return this.kitchenService.createTicket(kitchenId)
   }
 
-  getTickets(kitchenId: KitchenId){
+  @UseInterceptors(CacheInterceptor)
+  async getTickets(kitchenId: KitchenId){
+    const foo = await this.redisService.get('foo');
+    // console.log(foo)
+    if (foo){
+      console.log("CACHED");
+      // return foo;
+      return this.kitchenService.getTickets(kitchenId)
+    }
+    console.log('NOT CACHED!');
+    const f = {foo:'bar'}
+    this.redisService.set('foo', f)
     return this.kitchenService.getTickets(kitchenId)
   }
 

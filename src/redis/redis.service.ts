@@ -13,7 +13,8 @@ export class RedisService {
 
     async set(key:string, value: unknown){
         console.log(`SET ${key} from REDIS`);
-        await this.cache.set(key, value);
+        // console.log(value["foo"])
+        await this.cache.set(key, value["foo"],0);
     }
 
     async del(key:string){
