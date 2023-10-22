@@ -1,3 +1,5 @@
+require('dotenv').config()
+import { HttpService } from '@nestjs/axios/dist';
 import { Injectable } from '@nestjs/common';
 import { 
   KitchenId, 
@@ -7,13 +9,15 @@ import {
   UpdateTicketDto,
   Ticket
 } from 'humf-proto/build/proto/kitchen';
+import { map , lastValueFrom } from 'rxjs';
 // import { CreateKitchenDto } from './dto/create-kitchen.dto';
 // import { UpdateKitchenDto } from './dto/update-kitchen.dto';
 
 @Injectable()
 export class KitchenService {
+  constructor(private httpService: HttpService) {}
 
-  getOrder(kitchenId: KitchenId){
+  async getOrder(kitchenId: KitchenId){
     const order:Order = {
 
     }
@@ -41,7 +45,29 @@ export class KitchenService {
     return ticket
   }
 
-  completeTicket(ticketId: TicketId){
+  async completeTicket(ticketId: TicketId){
+    // find ticket with ticketId
+    const {id, ...ticket} = {
+      id : 1,
+      userId : 1,
+      resId : 1,
+      menus : [{
+        id: 1,
+        name: "pad thai",
+        price: 30,
+        description: "",
+        quatity : 2,
+      }]
+    }
+    // remove ticket in database
+
+    // POST /order @body ticket
+    const data = await lastValueFrom(
+      this.httpService.post("http://localhost:4000/order", ticket).pipe(
+        map(res => res.data)
+      )
+    );
+    
     return {}
   }
 }
