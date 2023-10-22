@@ -14,6 +14,7 @@ async function bootstrap() {
       protoPath: join(__dirname, '../proto/kitchen.proto'),
     }
   });
+  
   app.listen()
 }
 bootstrap();

@@ -3,6 +3,7 @@ version: '3.8'
 services:
   redis:
     image: bitnami/redis:6.2.14-debian-11-r0
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
     container_name: redis
     env_file:
       - .env
