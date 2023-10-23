@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
+import { Injectable, UseInterceptors } from '@nestjs/common';
 import { 
   KitchenId, 
   Order, 
@@ -7,17 +8,23 @@ import {
   UpdateTicketDto,
   Ticket
 } from 'humf-proto/build/proto/kitchen';
-// import { CreateKitchenDto } from './dto/create-kitchen.dto';
-// import { UpdateKitchenDto } from './dto/update-kitchen.dto';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class KitchenService {
+  
+  constructor(
+    private readonly redisService: RedisService
+  ) {}
 
-  getOrder(kitchenId: KitchenId){
-    const order:Order = {
-
+  @UseInterceptors(CacheInterceptor)
+  async getOrder(kitchenId: KitchenId){
+    console.log("start consume queue")
+    const result = await this.redisService.consumeQueue(`kitchen_${kitchenId.id}`) as Order | null;
+    if (result){
+      return result
     }
-    return order
+    return {userId: undefined,resId: undefined, menus: null}
   }
 
   createTicket(kitchenId: KitchenId){
@@ -36,7 +43,8 @@ export class KitchenService {
 
   updateTicket(updateTicketDto: UpdateTicketDto){
     const ticket:Ticket = {
-
+      id: '',
+      order: undefined
     }
     return ticket
   }
