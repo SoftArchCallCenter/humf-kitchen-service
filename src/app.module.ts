@@ -2,9 +2,15 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { KitchenModule } from './kitchen/kitchen.module';
+import { DatabaseModule } from './database/database.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [KitchenModule],
+  imports: [
+    KitchenModule, 
+    DatabaseModule,
+    ConfigModule.forRoot({isGlobal: true}), 
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
