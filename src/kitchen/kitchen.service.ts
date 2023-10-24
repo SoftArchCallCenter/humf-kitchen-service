@@ -6,7 +6,8 @@ import {
   TicketId, 
   TicketList,
   UpdateTicketDto,
-  Ticket
+  Ticket,
+  CreateTicketDto
 } from 'humf-proto/build/proto/kitchen';
 import { RedisService } from 'src/redis/redis.service';
 
@@ -27,11 +28,12 @@ export class KitchenService {
     return {userId: undefined,resId: undefined, menus: null}
   }
 
-  createTicket(kitchenId: KitchenId){
-    const ticketList:TicketList = {
-      tickets: []
+  createTicket(createTicketDto: CreateTicketDto){
+    const ticket:Ticket = {
+      id: 0,
+      order: undefined
     }
-    return ticketList
+    return ticket
   }
 
   getTickets(kitchenId: KitchenId){
@@ -43,7 +45,7 @@ export class KitchenService {
 
   updateTicket(updateTicketDto: UpdateTicketDto){
     const ticket:Ticket = {
-      id: '',
+      id: 0,
       order: undefined
     }
     return ticket

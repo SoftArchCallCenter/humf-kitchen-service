@@ -7,7 +7,8 @@ import {
   TicketList,
   UpdateTicketDto,
   Order,
-  KitchenServiceControllerMethods
+  KitchenServiceControllerMethods,
+  CreateTicketDto
 } from '../../humf-proto/build/proto/kitchen'
 
 @Controller()
@@ -21,8 +22,8 @@ export class KitchenController implements KitchenServiceController{
     return this.kitchenService.getOrder(kitchenId)
   }
 
-  createTicket(kitchenId: KitchenId){
-    return this.kitchenService.createTicket(kitchenId)
+  createTicket(createTicketDto: CreateTicketDto){
+    return this.kitchenService.createTicket(createTicketDto)
   }
 
   async getTickets(kitchenId: KitchenId){
