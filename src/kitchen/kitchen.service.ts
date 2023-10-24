@@ -1,6 +1,6 @@
 require('dotenv').config()
 import { CacheInterceptor } from '@nestjs/cache-manager';
-import { Injectable, NotFoundException, UseInterceptors } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, UseInterceptors } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { InjectRepository } from '@nestjs/typeorm';
 import { 
@@ -16,6 +16,9 @@ import { map , lastValueFrom } from 'rxjs';
 import { TicketCard } from './entities/ticket.entity';
 import { Repository } from 'typeorm'
 import { OrderMenu } from './entities/order.entity';
+import { ClientProxy } from '@nestjs/microservices';
+import { CreateNotificationDto } from './dto/create_notification.dto';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class KitchenService {
@@ -25,6 +28,7 @@ export class KitchenService {
     private readonly redisService: RedisService,
     @InjectRepository(TicketCard) private TicketRepository: Repository<TicketCard>,
     @InjectRepository(OrderMenu) private OrderRepository: Repository<OrderMenu>,
+    @Inject('NOTIFICATION') private rmqClient: ClientProxy,
   ) {}
 
   @UseInterceptors(CacheInterceptor)
@@ -48,6 +52,19 @@ export class KitchenService {
       let newMenu = this.OrderRepository.create({ticketId,menuId: id, ...menuField});
       await this.OrderRepository.save(newMenu);
     }
+
+    const noticData : CreateNotificationDto = {
+      user_id: String(userId),
+      kitchen_id: String(resId),
+      ticket_id: String(ticketId),
+      order_id: String(ticketId),
+      status: status,
+      datetime: new Date()
+    } 
+
+
+    this.rmqClient.emit('create_notification', noticData)
+
     return {id: ticketId, status, order: createTicketDto}
   }
 
@@ -69,6 +86,19 @@ export class KitchenService {
       throw new NotFoundException('Ticket not found');
     }
     const newTicket = await this.TicketRepository.findOneBy({ id })
+
+    const noticData : CreateNotificationDto = {
+      user_id: String(newTicket.userId),
+      kitchen_id: String(newTicket.resId),
+      ticket_id: String(id),
+      order_id: String(id),
+      status: status,
+      datetime: new Date()
+    } 
+
+
+    this.rmqClient.emit('create_notification', noticData)
+
     return {id, status: newTicket.status, order: null}
   }
 
@@ -92,6 +122,18 @@ export class KitchenService {
         map(res => res.data)
       )
     );
+
+    const noticData : CreateNotificationDto = {
+      user_id: String(userId),
+      kitchen_id: String(resId),
+      ticket_id: String(ticketId),
+      order_id: String(ticketId),
+      status: "COMPLETED",
+      datetime: new Date()
+    } 
+
+
+    this.rmqClient.emit('create_notification', noticData)
     
     return {}
   }
