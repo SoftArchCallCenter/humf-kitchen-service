@@ -1,15 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { 
   KitchenId, 
   Order, 
   TicketId, 
+  CreateTicketDto,
   TicketList,
   UpdateTicketDto,
   Ticket
 } from 'humf-proto/build/proto/kitchen';
 import { TicketCard } from './entities/ticket.entity';
 import { Repository } from 'typeorm'
+import { OrderMenu } from './entities/order.entity';
+// import { CreateTicketDto} from './dto/create-kitchen.dto';
 // import { CreateKitchenDto } from './dto/create-kitchen.dto';
 // import { UpdateKitchenDto } from './dto/update-kitchen.dto';
 
@@ -17,34 +20,59 @@ import { Repository } from 'typeorm'
 export class KitchenService {
   constructor(
     @InjectRepository(TicketCard) private TicketRepository: Repository<TicketCard>,
+    @InjectRepository(OrderMenu) private OrderRepository: Repository<OrderMenu>,
   ) {}
 
   getOrder(kitchenId: KitchenId){
     const order:Order = {
-
+      userId: 0,
+      resId: 0,
+      menus: []
     }
     return order
   }
 
-  createTicket(kitchenId: KitchenId){
-    const ticketList:TicketList = {
-      tickets: []
+  async createTicket(createTicketDto: CreateTicketDto){
+    const {userId, resId, menus} = createTicketDto;
+    let newTicket = this.TicketRepository.create({userId, resId, status: "accepted"});
+    const createdTicket = await this.TicketRepository.save(newTicket);
+    const ticketId = createdTicket.id
+    const status = createdTicket.status;
+    for (var menu of menus){
+      const {id, ...menuField} = menu;
+      let newMenu = this.OrderRepository.create({ticketId,menuId: id, ...menuField});
+      await this.OrderRepository.save(newMenu);
     }
-    return ticketList
+    return {id: ticketId, status, order: createTicketDto}
   }
 
-  getTickets(kitchenId: KitchenId){
-    const ticketList:TicketList = {
-      tickets: []
+  async getTickets(kitchenId: KitchenId){
+    const result:Ticket[] = []
+    const tickets = await this.TicketRepository.findBy({resId: kitchenId.id});
+    for (var ticket of tickets){
+      const {id, userId, resId} = ticket;
+      const menus = await this.OrderRepository.findBy({ticketId: id});
+      result.push({id, order:{userId, resId, menus}})
     }
-    return ticketList
+    return {tickets: result}
   }
 
-  updateTicket(updateTicketDto: UpdateTicketDto){
-    const ticket:Ticket = {
+  // async getTicket(id: number) {
+  //   const ticket = await this.TicketRepository.findOneBy({ id });
+  //   return tickets;
+  // }
 
+  async updateTicket(updateTicketDto: UpdateTicketDto){
+    // const ticket:Ticket = {
+
+    // }
+    const {id, status} = updateTicketDto
+    const ticket = await this.TicketRepository.update({ id },{ status })
+    if(!ticket){
+      throw new NotFoundException('Ticket not found');
     }
-    return ticket
+    const newTicket = await this.TicketRepository.findOneBy({ id })
+    return {id, status: newTicket.status, order: null}
   }
 
   completeTicket(ticketId: TicketId){

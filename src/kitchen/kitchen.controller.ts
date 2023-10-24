@@ -2,10 +2,11 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { KitchenService } from './kitchen.service';
 // import { CreateKitchenDto } from './dto/create-kitchen.dto';
-// import { UpdateKitchenDto } from './dto/update-kitchen.dto';
+// import { UpdateTicketDto } from './dto/update-kitchen.dto';
 import {
   KitchenId,
   KitchenServiceController,
+  CreateTicketDto,
   TicketId,
   TicketList,
   UpdateTicketDto,
@@ -22,8 +23,8 @@ export class KitchenController implements KitchenServiceController{
     return this.kitchenService.getOrder(kitchenId)
   }
 
-  createTicket(kitchenId: KitchenId){
-    return this.kitchenService.createTicket(kitchenId)
+  createTicket(createTicketDto: CreateTicketDto){
+    return this.kitchenService.createTicket(createTicketDto)
   }
 
   getTickets(kitchenId: KitchenId){
