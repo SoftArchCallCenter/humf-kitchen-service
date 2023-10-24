@@ -1,17 +1,21 @@
-import { Menu } from "humf-proto/build/proto/kitchen";
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-
 @Entity()
-export class TicketCard {
+export class OrderMenu {
     @PrimaryGeneratedColumn()
     id: number;
+    @Column({ nullable: false})
+    ticketId: number;
     @Column({ nullable: false })
-    userId: number;
+    menuId: number;
     @Column({ nullable: false })
-    resId: number;
+    name: string;
     @Column({ nullable: false })
-    status: string;
+    price: number;
+    @Column()
+    description: string;
+    @Column({ nullable: false })
+    quatity: number;
 }
 
  

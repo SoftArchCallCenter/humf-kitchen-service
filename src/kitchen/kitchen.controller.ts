@@ -3,12 +3,10 @@ import { KitchenService } from './kitchen.service';
 import {
   KitchenId,
   KitchenServiceController,
+  CreateTicketDto,
   TicketId,
-  TicketList,
   UpdateTicketDto,
-  Order,
   KitchenServiceControllerMethods,
-  CreateTicketDto
 } from '../../humf-proto/build/proto/kitchen'
 
 @Controller()

@@ -3,8 +3,16 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { KitchenModule } from './kitchen/kitchen.module';
 import { RedisModule } from './redis/redis.module';
+import { DatabaseModule } from './database/database.module';
+import { ConfigModule } from '@nestjs/config';
+
 @Module({
-  imports: [KitchenModule, RedisModule],
+  imports: [
+    KitchenModule, 
+    DatabaseModule,
+    RedisModule,
+    ConfigModule.forRoot({isGlobal: true}), 
+  ],
   controllers: [AppController],
   providers: [AppService, ], 
 })
