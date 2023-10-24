@@ -12,9 +12,6 @@ import {
 import { TicketCard } from './entities/ticket.entity';
 import { Repository } from 'typeorm'
 import { OrderMenu } from './entities/order.entity';
-// import { CreateTicketDto} from './dto/create-kitchen.dto';
-// import { CreateKitchenDto } from './dto/create-kitchen.dto';
-// import { UpdateKitchenDto } from './dto/update-kitchen.dto';
 
 @Injectable()
 export class KitchenService {
@@ -22,7 +19,7 @@ export class KitchenService {
     @InjectRepository(TicketCard) private TicketRepository: Repository<TicketCard>,
     @InjectRepository(OrderMenu) private OrderRepository: Repository<OrderMenu>,
   ) {}
-
+   
   getOrder(kitchenId: KitchenId){
     const order:Order = {
       userId: 0,
@@ -50,22 +47,14 @@ export class KitchenService {
     const result:Ticket[] = []
     const tickets = await this.TicketRepository.findBy({resId: kitchenId.id});
     for (var ticket of tickets){
-      const {id, userId, resId} = ticket;
+      const {id, userId, resId, status} = ticket;
       const menus = await this.OrderRepository.findBy({ticketId: id});
-      result.push({id, order:{userId, resId, menus}})
+      result.push({id, status, order:{userId, resId, menus}})
     }
     return {tickets: result}
   }
 
-  // async getTicket(id: number) {
-  //   const ticket = await this.TicketRepository.findOneBy({ id });
-  //   return tickets;
-  // }
-
   async updateTicket(updateTicketDto: UpdateTicketDto){
-    // const ticket:Ticket = {
-
-    // }
     const {id, status} = updateTicketDto
     const ticket = await this.TicketRepository.update({ id },{ status })
     if(!ticket){
