@@ -9,6 +9,22 @@ services:
     env_file:
       - .env
   
+  kitchen-service:
+    build: ./
+    container_name: kitchen-service
+    env_file:
+      - .env
+    ports:
+      - ${USER_SERVICE_PORT}:${USER_SERVICE_PORT}
+    depends_on:
+      - mysql
+    volumes:
+      - ./src:/app/src
+    command: npm run start:dev
+    networks:
+      - default
+      - humf-service-network
+
 networks:
   humf-service-network:
     # external: true
