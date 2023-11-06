@@ -88,7 +88,7 @@ export class KitchenService {
       return rest
     })
     await lastValueFrom(
-      this.httpService.post("http://localhost:4000/order", {userId, resId, menus}).pipe(
+      this.httpService.post(`${process.env.ORDER_SERVICE_URL}/order`, {userId, resId, menus}).pipe(
         map(res => res.data)
       )
     );
