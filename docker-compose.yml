@@ -8,6 +8,14 @@ services:
     container_name: mysql-kitchen-service
     env_file:
       - .env
+
+  redis:
+    image: bitnami/redis:6.2.14-debian-11-r0
+    container_name: redis
+    env_file:
+      - .env
+    ports:
+      - 6379:6379
   
 networks:
   humf-service-network:
