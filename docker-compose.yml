@@ -16,6 +16,22 @@ services:
       - .env
     ports:
       - 6379:6379
+
+  kitchen-service:
+    build: ./
+    container_name: kitchen-service
+    env_file:
+      - .env
+    ports:
+      - ${KITCHEN_SERVICE_PORT}:${KITCHEN_SERVICE_PORT}
+    depends_on:
+      - mysql
+    volumes:
+      - ./src:/app/src
+    command: npm run start:dev
+    networks:
+      - default
+      - humf-service-network
   
 networks:
   humf-service-network:
