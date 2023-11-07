@@ -16,10 +16,6 @@ export class KitchenController implements KitchenServiceController{
     private readonly kitchenService: KitchenService,
     ) {}
 
-  async getOrder(kitchenId: KitchenId){
-    return this.kitchenService.getOrder(kitchenId)
-  }
-
   createTicket(createTicketDto: CreateTicketDto){
     return this.kitchenService.createTicket(createTicketDto)
   }

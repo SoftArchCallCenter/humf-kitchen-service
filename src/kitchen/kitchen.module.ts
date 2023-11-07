@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { KitchenService } from './kitchen.service';
 import { KitchenController } from './kitchen.controller';
-import { RedisModule } from 'src/redis/redis.module';
 import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TicketCard } from './entities/ticket.entity'
@@ -17,7 +16,6 @@ import { RmqModule } from '../rmq/rmq.module';
     timeout: 5000,
     maxRedirects: 5,
   }),
-  RedisModule,
   RmqModule.register({
     name: 'NOTIFICATION'
   }),

@@ -1,17 +1,14 @@
 require('dotenv').config()
-import { CacheInterceptor } from '@nestjs/cache-manager';
-import { Inject, Injectable, NotFoundException, UseInterceptors } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { InjectRepository } from '@nestjs/typeorm';
 import { 
   KitchenId,
-  Order, 
   TicketId, 
   CreateTicketDto,
   UpdateTicketDto,
   Ticket,
 } from 'humf-proto/build/proto/kitchen';
-import { RedisService } from 'src/redis/redis.service';
 import { map , lastValueFrom } from 'rxjs';
 import { TicketCard } from './entities/ticket.entity';
 import { Repository } from 'typeorm'
@@ -25,21 +22,10 @@ export class KitchenService {
   
   constructor(
     private httpService: HttpService,
-    private readonly redisService: RedisService,
     @InjectRepository(TicketCard) private TicketRepository: Repository<TicketCard>,
     @InjectRepository(OrderMenu) private OrderRepository: Repository<OrderMenu>,
     @Inject('NOTIFICATION') private rmqClient: ClientProxy,
   ) {}
-
-  @UseInterceptors(CacheInterceptor)
-  async getOrder(kitchenId: KitchenId){
-    console.log("start consume queue")
-    const result = await this.redisService.consumeQueue(`kitchen_${kitchenId.id}`) as Order | null;
-    if (result){
-      return result
-    }
-    return {userId: undefined,resId: undefined, menus: null}
-  }
   
   async createTicket(createTicketDto: CreateTicketDto){
     const {userId, resId, menus} = createTicketDto;
