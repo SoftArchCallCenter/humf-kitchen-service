@@ -28,6 +28,9 @@ export class KitchenService {
   ) {}
   
   async createTicket(createTicketDto: CreateTicketDto){
+    console.log(`create ticket`)
+    console.log(createTicketDto)
+    console.log(`---------------`)
     const {userId, resId, menus} = createTicketDto;
     let newTicket = this.TicketRepository.create({userId, resId, status: "accepted"});
     const createdTicket = await this.TicketRepository.save(newTicket);

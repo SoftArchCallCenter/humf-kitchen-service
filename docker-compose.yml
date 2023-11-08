@@ -27,4 +27,5 @@ services:
   
 networks:
   humf-service-network:
-    # external: true
+    name: humf-service-network
+    driver: bridge
