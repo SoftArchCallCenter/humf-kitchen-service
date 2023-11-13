@@ -36,4 +36,8 @@ export class KitchenController implements KitchenServiceController{
   completeTicket(ticketId: TicketId){
     return this.kitchenService.completeTicket(ticketId)
   }
+
+  getAllKitchenTotalTickets(){
+    return this.kitchenService.getAllKitchenTotalTickets()
+  }
 }

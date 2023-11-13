@@ -9,6 +9,7 @@ import {
   UpdateTicketDto,
   Ticket,
   UserId,
+  TotalTicket,
 } from 'humf-proto/build/proto/kitchen';
 import { map , lastValueFrom } from 'rxjs';
 import { TicketCard } from './entities/ticket.entity';
@@ -134,5 +135,22 @@ export class KitchenService {
     this.rmqClient.emit('create_notification', noticData)
     
     return {}
+  }
+
+  async getAllKitchenTotalTickets() {
+    const tickets = await this.TicketRepository.findBy({});
+    const counts: { [key: number]: number } = {};
+    tickets.forEach((ticket) => {
+      if (counts[ticket.resId]){
+        counts[ticket.resId]++;
+      } else {
+        counts[ticket.resId] = 1;
+      }
+    })
+    const totals: TotalTicket[] = Object.keys(counts).map((resId) => ({
+      resId: parseInt(resId, 10),
+      total: counts[parseInt(resId, 10)],
+    }))
+    return {totals}
   }
 }
