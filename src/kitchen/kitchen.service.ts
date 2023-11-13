@@ -8,6 +8,7 @@ import {
   CreateTicketDto,
   UpdateTicketDto,
   Ticket,
+  UserId,
 } from 'humf-proto/build/proto/kitchen';
 import { map , lastValueFrom } from 'rxjs';
 import { TicketCard } from './entities/ticket.entity';
@@ -57,6 +58,17 @@ export class KitchenService {
   async getTickets(kitchenId: KitchenId){
     const result:Ticket[] = []
     const tickets = await this.TicketRepository.findBy({resId: kitchenId.id});
+    for (var ticket of tickets){
+      const {id, userId, resId, status} = ticket;
+      const menus = await this.OrderRepository.findBy({ticketId: id});
+      result.push({id, status, order:{userId, resId, menus}})
+    }
+    return {tickets: result}
+  }
+
+  async getTicketsByUserId(userId: UserId){
+    const result:Ticket[] = []
+    const tickets = await this.TicketRepository.findBy({userId: userId.id});
     for (var ticket of tickets){
       const {id, userId, resId, status} = ticket;
       const menus = await this.OrderRepository.findBy({ticketId: id});
