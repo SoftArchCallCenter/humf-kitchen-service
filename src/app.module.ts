@@ -14,7 +14,7 @@ import * as Joi from 'joi';
       isGlobal: true,
       validationSchema: Joi.object({
         RABBIT_MQ_URI: Joi.string().required(),
-        RABBIT_MQ_QUEUE: Joi.string().required(),
+        RABBIT_MQ_NOTIFICATION_QUEUE: Joi.string().required(),
       }),
       envFilePath: './.env',
     }), 

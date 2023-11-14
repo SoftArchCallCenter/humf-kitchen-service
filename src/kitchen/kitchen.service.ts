@@ -27,7 +27,9 @@ export class KitchenService {
     @InjectRepository(TicketCard) private TicketRepository: Repository<TicketCard>,
     @InjectRepository(OrderMenu) private OrderRepository: Repository<OrderMenu>,
     @Inject('NOTIFICATION') private rmqClient: ClientProxy,
-  ) {}
+  ) {
+      this.rmqClient.connect();
+  }
   
   async createTicket(createTicketDto: CreateTicketDto){
     const {userId, resId, menus} = createTicketDto;
